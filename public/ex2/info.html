@@ -23,10 +23,67 @@
 
         </div>
         <script>
-            function getData() {
- 
+            async function getData() {
+                try {
+                    const limit = document.getElementById("limit").value;
+                    const type = document.getElementById("type").value;
+		            const response = await axios.get("/data?type=" + type + "&limit=" + limit);
+                    // const response = await axios.get("/data", {
+                    //     params; {
+                    //         "type": type,
+                    //         "limit": limit
+                    //     }
+                    // })
+                    const data = response.data;
+                    generateTable(data);
+                    }
+                    catch(err) {
+                        console.error(err)
+                    }
+                    function generateTable(dataObj) {
+                        const resultdivElem = document.getElementById("result");
+                        //This is to make sure theres only one title and not many since its appendChild here
+                        while (resultdivElem.firstChild) {
+                            resultdivElem.firstChild.remove();
+                        }
+                        //Creates elements to come up with the table
+                        //Table title
+                        const h2Elem = document.createElement("h2")
+                        h2Elem.innerText = dataObj["type"];
+                        resultdivElem.appendChild(h2Elem);
+                        //Table headings
+                        const tableElem = document.createElement("table");
+                        tableElem.className = "table"
+                        const tBodyElem = document.createElement("tbody");
+                        const trElem = document.createElement("tr");
+                        const tHeadings = Object.keys(dataObj["records"][0]);
+                        for (const headingVal of tHeadings) {
+                            const thElem = document.createElement("th");
+                            thElem.innerText = headingVal;
+                            trElem.appendChild(thElem);
+                        }
+                        tBodyElem.appendChild(trElem);
+                        tableElem.appendChild(tBodyElem);
+                        resultdivElem.appendChild(tableElem);
+                        //table data
+                        //loop through the objects in record array
+                        for(leti=0; i<dataObj["records"].length; i++) {
+                            const trElem = document.createElement("tr");
+                            //loop through the headers in each object
+                            for (let j=0;j<tHeadings.length;j++) {
+                                const propVal = dataObj["records"][i][tHeadings[j]];
+                                const tdElem = document.createElement("td");
+                                tdElem.innerText = propVal;
+                                trElem.appendChild(tdElem);
+                            }
+                            tBodyElem.appendChild(trElem);
+                        }
+                        tableElem.appendChild(tBodyElem);
+                        resultdivElem.appendChild(tableElem);
+                    }
             }
 
         </script>
+        <table></table>
 </body>
 </html>
