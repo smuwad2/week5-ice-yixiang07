@@ -24,22 +24,23 @@
         </div>
         <script>
             async function getData() {
+                const limit = document.getElementById("limit").value;
+                const type = document.getElementById("type").value;
                 try {
-                    const limit = document.getElementById("limit").value;
-                    const type = document.getElementById("type").value;
-		            const response = await axios.get("/data?type=" + type + "&limit=" + limit);
-                    // const response = await axios.get("/data", {
-                    //     params; {
-                    //         "type": type,
-                    //         "limit": limit
-                    //     }
-                    // })
+		            // const response = await axios.get("/data?type=" + type + "&limit=" + limit);
+                    const response = await axios.get("/data", {
+                        params: {
+                            "type": type,
+                            "limit": limit
+                        }
+                    })
                     const data = response.data;
                     generateTable(data);
                     }
-                    catch(err) {
-                        console.error(err)
+                    catch(error) {
+                        console.log(error)
                     }
+            }
                     function generateTable(dataObj) {
                         const resultdivElem = document.getElementById("result");
                         //This is to make sure theres only one title and not many since its appendChild here
@@ -63,11 +64,11 @@
                             trElem.appendChild(thElem);
                         }
                         tBodyElem.appendChild(trElem);
-                        tableElem.appendChild(tBodyElem);
-                        resultdivElem.appendChild(tableElem);
+                        // tableElem.appendChild(tBodyElem);
+                        // resultdivElem.appendChild(tableElem);
                         //table data
                         //loop through the objects in record array
-                        for(leti=0; i<dataObj["records"].length; i++) {
+                        for(let i=0; i<dataObj["records"].length; i++) {
                             const trElem = document.createElement("tr");
                             //loop through the headers in each object
                             for (let j=0;j<tHeadings.length;j++) {
@@ -81,7 +82,6 @@
                         tableElem.appendChild(tBodyElem);
                         resultdivElem.appendChild(tableElem);
                     }
-            }
 
         </script>
         <table></table>
