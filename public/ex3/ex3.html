@@ -33,34 +33,93 @@
     </div>
     
     <script>
-        function getCategories() {
+        async function getCategories() {
             // Fetch categories from the server using Axios
             // and display them in the select element
             // url: http://localhost:3010/categories
-
+            try{
+            const response = await axios.get("/categories");
+            const categories = response.data;
+            showCategories(categories);
+            }
+            catch(error){
+                console.log(error);
+            }
         }
 
         function showCategories(categories) {
             // Display the categories in the select element
-            
+            const selectElem = document.getElementById("selectCategory");
+            for (cat of categories) {
+                const optionElem = document.createElement("option");
+                optionElem.innerText = cat;
+                selectElem.appendChild(optionElem);
+            }
         }
 
-        function getItems() {
+        async function getItems() {
             // Fetch items based on the selected category
             // If "To select" is chosen, do nothing
             // If "All" is chosen, fetch all items
             // If a specific category is chosen, fetch items for that category
             // url: http://localhost:3010/items?category=categoryName
-            
+            const option = document.getElementById("selectCategory").value;
+            try {
+                var url = "/items";
+                if (option !== "all") {
+                    url+= "?category=" + option;
+                }
+                const response = await axios.get(url);
+                const items = response.data;
+                showItems(items);
+            }
+            catch(error){
+                console.log(error);
+            }
+
         }
 
         function showItems(items) {
             // Display the items in the itemsList div
             // Each item should be displayed in a bootstrap card format
             // The display should be responsive 3 columns on large screens, 2 columns on medium screens, and 1 column on small screens
-            
+            const itemsElem = document.getElementById("itemsList");
+            itemsElem.innerText = "";
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "row mb-3";
+            for (item of items) {
+                const colDiv = document.createElement("div");
+                colDiv.className = "col-4";
+                const card = document.createElement("div");
+                card.className = "card h-100 shadow-sm";
 
+                const cardBody = document.createElement("div");
+                cardBody.className = "card-body";
+
+                const title = document.createElement("h5");
+                title.className = "card-title";
+                title.textContent = item.name;
+
+                const category = document.createElement("p");
+                category.className = "card-text text-muted";
+                category.textContent = "Category: " + item.category;
+
+                const price = document.createElement("p");
+                price.className = "card-text fw-bold";
+                price.textContent = "Price: $" + item.price;
+
+                cardBody.appendChild(title);
+                cardBody.appendChild(category);
+                cardBody.appendChild(price);
+
+                card.appendChild(cardBody);
+                colDiv.appendChild(card);
+                rowDiv.appendChild(colDiv);
+            }
+            itemsElem.appendChild(rowDiv);
         }
+
+        
 
     </script>
 
